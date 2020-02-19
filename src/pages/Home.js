@@ -1,57 +1,40 @@
-import React, { Component } from "react";
+import React from "react";
 import { Link } from "react-router-dom";
 import { withAuth } from "@okta/okta-react";
+import { useAuthenticated } from "../container/useAuthenticated";
 
-export default withAuth(
-  class Home extends Component {
-    constructor(props) {
-      super(props);
-      this.state = { authenticated: null };
-      this.checkAuthentication = this.checkAuthentication.bind(this);
-      this.checkAuthentication();
-    }
+function Home(props) {
+  const isAuth = useAuthenticated(props.auth);
 
-    async checkAuthentication() {
-      const authenticated = await this.props.auth.isAuthenticated();
-      if (authenticated !== this.state.authenticated) {
-        this.setState({ authenticated });
-      }
-    }
+  if (isAuth === null) return null;
 
-    componentDidUpdate() {
-      this.checkAuthentication();
-    }
+  const button = isAuth ? (
+    <button
+      onClick={() => {
+        props.auth.logout();
+      }}
+    >
+      Logout
+    </button>
+  ) : (
+    <button
+      onClick={() => {
+        props.auth.login();
+      }}
+    >
+      Login
+    </button>
+  );
 
-    render() {
-      if (this.state.authenticated === null) return null;
+  return (
+    <div>
+      <Link to='/'>Home</Link>
+      <br />
+      <Link to='/protected'>Protected</Link>
+      <br />
+      {button}
+    </div>
+  );
+}
 
-      const button = this.state.authenticated ? (
-        <button
-          onClick={() => {
-            this.props.auth.logout();
-          }}
-        >
-          Logout
-        </button>
-      ) : (
-        <button
-          onClick={() => {
-            this.props.auth.login();
-          }}
-        >
-          Login
-        </button>
-      );
-
-      return (
-        <div>
-          <Link to='/'>Home</Link>
-          <br />
-          <Link to='/protected'>Protected</Link>
-          <br />
-          {button}
-        </div>
-      );
-    }
-  }
-);
+export default withAuth(Home);
