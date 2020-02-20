@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState } from "react";
 import OktaAuth from "@okta/okta-auth-js";
 import { withAuth } from "@okta/okta-react";
 import { useForm } from "../container/useForm";
