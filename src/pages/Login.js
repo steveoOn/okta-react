@@ -5,7 +5,7 @@ import LoginForm from "../components/LoginForm";
 import { useAuthenticated } from "../container/useAuthenticated";
 
 function Login(props) {
-  const authenticated = useAuthenticated(props.auth);
+  const authenticated = useAuthenticated(props.auth.isAuthenticated);
 
   if (authenticated === null) return null;
 

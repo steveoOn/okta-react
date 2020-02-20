@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
 
-export function useAuthenticated(parentProps) {
+export function useAuthenticated(authMethod) {
   const [authenticated, setAuthenticated] = useState(null);
 
   useEffect(() => {
     async function checkAuthentication() {
-      const isAuthenticated = await parentProps.isAuthenticated();
+      const isAuthenticated = await authMethod();
       if (isAuthenticated !== authenticated) {
         setAuthenticated(isAuthenticated);
       }
