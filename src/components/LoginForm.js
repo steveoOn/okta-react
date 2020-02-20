@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import OktaAuth from "@okta/okta-auth-js";
 import { withAuth } from "@okta/okta-react";
+import { useForm } from "../container/useForm";
 
-export default withAuth(function LoginForm(props) {
-  const [state, setState] = useState({
-    sessionToken: null,
+function LoginForm(props) {
+  const [sessionToken, setSessionToken] = useState(null);
+  const [value, getValue] = useForm({
     username: "",
     password: ""
   });
@@ -15,37 +16,15 @@ export default withAuth(function LoginForm(props) {
     e.preventDefault();
     oktaAuth
       .signIn({
-        username: state.username,
-        password: state.password
+        username: value.username,
+        password: value.password
       })
-      .then(res =>
-        setState(state => ({
-          ...state,
-          sessionToken: res.sessionToken
-        }))
-      )
+      .then(res => setSessionToken(res.sessionToken))
       .catch(err => console.log("Found an error", err));
   }
 
-  const handleUsernameChange = e => {
-    // if do not store e.target.value into the variable will cause an ERROR!!
-    let val = e.target.value;
-    setState(state => ({
-      ...state,
-      username: val
-    }));
-  };
-
-  function handlePasswordChange(e) {
-    let val = e.target.value;
-    setState(state => ({
-      ...state,
-      password: val
-    }));
-  }
-
-  if (state.sessionToken) {
-    props.auth.redirect({ sessionToken: state.sessionToken });
+  if (sessionToken) {
+    props.auth.redirect({ sessionToken });
     return null;
   }
 
@@ -56,18 +35,20 @@ export default withAuth(function LoginForm(props) {
         <input
           id='username'
           type='text'
-          value={state.username}
-          onChange={handleUsernameChange}
+          value={value.username}
+          onChange={getValue}
         />
         Password:
         <input
           id='password'
           type='password'
-          value={state.password}
-          onChange={handlePasswordChange}
+          value={value.password}
+          onChange={getValue}
         />
       </label>
       <input id='submit' type='submit' value='Submit' />
     </form>
   );
-});
+}
+
+export default withAuth(LoginForm);
